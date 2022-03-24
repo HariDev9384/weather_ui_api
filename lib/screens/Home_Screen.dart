@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_ui_api/models/weather.dart';
+import 'package:weather_ui_api/provider/AppState.dart';
 import 'package:weather_ui_api/provider/weather_provider.dart';
 class Home extends StatelessWidget {
-  Future<weather_forcast>? future=fetch_api_notifier().get_weather();
+  var city;
+  Future future=fetch_api_notifier().get_weather(AppState().search_txt);
   final GlobalKey _scaffoldkey=new GlobalKey();
   @override
   Widget build(BuildContext context) {
     var height=MediaQuery.of(context).size.height;
     var width=MediaQuery.of(context).size.width;
+    final appstate=Provider.of<AppState>(context);
+    final fetchstate=Provider.of<fetch_api_notifier>(context);
     return Consumer<fetch_api_notifier>(
     builder: ((context, value, child) => GestureDetector(
       child: Scaffold(
@@ -18,6 +22,25 @@ class Home extends StatelessWidget {
             child: SafeArea(
               child: Column(
                 children: [
+                  Row(
+                    children: [
+                      TextField(
+                        onChanged: (val){
+                          city=val;
+                          value.notifyListeners();
+                           appstate.gettext(appstate.search_txt);
+                          print(city);
+                        },
+                      ),
+                      RaisedButton(
+                        onPressed: (){
+                          appstate.gettext(appstate.search_txt);
+                          //fetch_api_notifier().get_weather();
+                          value.notifyListeners();
+                        },
+                      )
+                    ],
+                  ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
@@ -32,36 +55,49 @@ class Home extends StatelessWidget {
             ),
           ),
           backgroundColor: Color.fromARGB(255, 25, 2, 65),
-          body: FutureBuilder<weather_forcast>(
-            future: future,
-            builder: ((context, snapshot) {
+          body: FutureBuilder<WeatherForecastModel>(
+            future: fetch_api_notifier().get_weather(appstate.search_txt),
+            builder: ((context,AsyncSnapshot<WeatherForecastModel> snapshot) {
               if(snapshot.hasData){
                 return SafeArea(
               child: Stack(
                 children: [
-                
                   Positioned(
                   bottom: 0,
-                  top: 0,    
-                    child: custom_appbar(height,width,snapshot,value,context)),
+                  top:0,    
+                    child: custom_appbar(height,width,snapshot,value,context,appstate)),
                   Positioned(
-                    top: height/09.9,
-                    bottom: height/1.67,
+                    top:height/12.2,
+                    left: height*0.05,
+                    child: Container(
+                    
+                      height: 50,
+                      width: width*0.8,
+                      //color: Colors.red,
+                      child: custom_search(height,width,snapshot,value,context,appstate,fetchstate)),
+                  ),
+                  Positioned(
+                    top: height/06,
+                    bottom: height/1.8,
                     left: height/022,
                     child: custom_container(height,width,snapshot,value)),
                   Positioned(
                       top: height*0.4,
                       child: custome_horizontal_7days(height, width, context,snapshot,value)),
-                    Positioned(
-                      top: height*0.42,
+                  Positioned(
+                      top: height*0.45,
                       left: height*0.155,
-                    child: custom_text(height,snapshot,value))
+                    child: custom_text(height,snapshot,value)),
+                    
                 ],
               ),
             );
               }
               else if(snapshot.hasError){
-                throw Exception('Network Failed');
+                return Container(
+                  color: Colors.white,
+                  child: Text('Network Failed'),
+                );
               }
               return Center(child: CircularProgressIndicator(color: Colors.white,));
             }),
@@ -72,7 +108,31 @@ class Home extends StatelessWidget {
     ),
     );
   }
+  Widget custom_search(height,width,snapshot,value,context,appstate,fetchstate){
+    return TextField(
+      onSubmitted: (val){
+        appstate.gettext(val);
+      },
+      decoration: InputDecoration(
+      
+        hintText: 'Enter your location',
+        hintStyle: TextStyle(
+          color: Colors.white
+        ),
+        prefixIcon: IconButton(
+          icon: Icon(Icons.search,color: Colors.white),
+          onPressed: (){
+            print('search area');
+          },
+        ),
+        border: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.white,),
+          borderRadius: BorderRadius.circular(10)
+        )
+      ),
+    );
 
+  }
   Widget custom_text(var height,snapshot,value){
     return Container(
       
@@ -87,7 +147,7 @@ class Home extends StatelessWidget {
     );
   }
 
-  Widget custom_appbar(var height,var width,snapshot,value,context){
+  Widget custom_appbar(var height,var width,snapshot,value,context,appstate){
     return Container(
       height: height*1,
       width: width/1,
@@ -149,7 +209,7 @@ class Home extends StatelessWidget {
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(double.parse(snapshot.data!.main.temp.toString()).ceil().toString().substring(0,2),
+                    Text(snapshot.data.city.name,
                     style: TextStyle(
                       fontSize: height*0.06,
                       fontWeight: FontWeight.bold,
@@ -172,7 +232,7 @@ class Home extends StatelessWidget {
                       color: Colors.yellow,
                       onPressed: ()=>print('location change'),
                     ),
-                    Text('${snapshot.data!.name} ${snapshot.data!.sys.country}',
+                    Text('',
                     style: TextStyle(
                       fontSize: height*0.02,
                       fontWeight: FontWeight.w600,
