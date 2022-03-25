@@ -6,7 +6,10 @@ import 'package:weather_ui_api/models/weather.dart';
 import 'package:weather_ui_api/provider/AppState.dart';
 
 class fetch_api_notifier with ChangeNotifier{
-  String apikey='4b52ac77c2868edd488d6e344561ea9f';
+  //primary api key
+  String apikey='ed60fcfbd110ee65c7150605ea8aceea';
+  //seconary key
+  //String apikey='187f23446c6a5876ab8e9a3bee6023db';
   String? cityname;
   fetch_api_notifier();
   String? get city=>cityname;
@@ -23,8 +26,8 @@ class fetch_api_notifier with ChangeNotifier{
               return WeatherForecastModel.fromJson(jsonDecode(response.body));
           }else{
             throw Exception('Json failed');
+            
           }
-          notifyListeners();
   }
   @override
   void notifyListeners() {

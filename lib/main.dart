@@ -5,10 +5,12 @@ import 'package:weather_ui_api/screens/Home_Screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 void main() {
+  //remove flash screen white
   FlutterNativeSplash.remove();
   runApp(
     //provider for intial state
-    // multi provider for list of many change notifie
+
+    // multi provider for list of many change notifier
     MultiProvider(
     providers: [
       ChangeNotifierProvider<AppState>(create: (context)=>AppState()),

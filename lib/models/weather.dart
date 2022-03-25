@@ -3,7 +3,7 @@ class WeatherForecastModel {
   String? cod;
   var message;
   var cnt;
-  List<Lista>? list;
+  List? list=<Lista>[];
 
   WeatherForecastModel(
       {this.city, this.cod, this.message, this.cnt, this.list});
@@ -94,6 +94,13 @@ class Coord {
   }
 }
 
+class Main{
+  var temp;
+  Main({this.temp});
+  Main.fromJson(Map<String,dynamic> json){
+    temp=json['temp'].toDouble();
+  }
+}
 class Lista {
   var dt;
   var sunrise;
@@ -108,10 +115,12 @@ class Lista {
   var clouds;
   var snow;
   var rain;
+  Main? main;
 
   Lista(
       {this.dt,
         this.sunrise,
+         required this.main,
         this.sunset,
         this.temp,
         this.feelsLike,
@@ -127,6 +136,7 @@ class Lista {
   Lista.fromJson(Map<String, dynamic> json) {
     dt = json['dt'];
     sunrise = json['sunrise'];
+    main=json['main']!=null?new Main.fromJson(json['main']):null;
     sunset = json['sunset'];
     temp = json['temp'] != null ? new Temp.fromJson(json['temp']) : null;
     feelsLike = json['feels_like'] != null

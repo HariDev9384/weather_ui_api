@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:weather_ui_api/models/weather.dart';
 import 'package:weather_ui_api/provider/AppState.dart';
+import 'package:weather_ui_api/widgets/Home_Widgets/AppBar.dart';
+import 'package:weather_ui_api/widgets/Home_Widgets/Custom_Search.dart';
+import 'package:weather_ui_api/widgets/Home_Widgets/Custom_Text.dart';
+import 'package:weather_ui_api/widgets/Home_Widgets/custom_horizontal_containers.dart';
+import 'package:weather_ui_api/widgets/Home_Widgets/custom_containers.dart';
 import 'package:weather_ui_api/provider/weather_provider.dart';
 class Home extends StatelessWidget {
   var city;
@@ -65,7 +70,8 @@ class Home extends StatelessWidget {
                   Positioned(
                   bottom: 0,
                   top:0,    
-                    child: custom_appbar(height,width,snapshot,value,context,appstate)),
+                    child: CustomAppBar(height: height,snapshot: snapshot,value: value,width: width,context: context,appstate:appstate).custom_appbar(height, width, snapshot, value, context, appstate),
+                  ),
                   Positioned(
                     top:height/12.2,
                     left: height*0.05,
@@ -74,20 +80,20 @@ class Home extends StatelessWidget {
                       height: 50,
                       width: width*0.8,
                       //color: Colors.red,
-                      child: custom_search(height,width,snapshot,value,context,appstate,fetchstate)),
+                      child: Custom_Search(height: height,width: width,context: context,value: value, snapshot: snapshot, appstate: appstate,fetchstate: fetchstate).custom_search(height,width,snapshot,value,context,appstate,fetchstate)),
                   ),
                   Positioned(
                     top: height/06,
-                    bottom: height/1.8,
+                    bottom: height/1.9,
                     left: height/022,
-                    child: custom_container(height,width,snapshot,value)),
+                    child: CustomContainer(height: height,snapshot: snapshot,value: value,width: width).custom_container(height,width,snapshot,value)),
                   Positioned(
                       top: height*0.4,
-                      child: custome_horizontal_7days(height, width, context,snapshot,value)),
+                      child: hori_cont(height: height,width: width,context: context,snapshot: snapshot,value: value).custome_horizontal_7days(height, width, context,snapshot,value)),
                   Positioned(
                       top: height*0.45,
                       left: height*0.155,
-                    child: custom_text(height,snapshot,value)),
+                    child: Custom_Text(height:height,width:width,snapshot: snapshot,value: value).custom_text(height,snapshot,value)),
                     
                 ],
               ),
@@ -96,7 +102,7 @@ class Home extends StatelessWidget {
               else if(snapshot.hasError){
                 return Container(
                   color: Colors.white,
-                  child: Text('Network Failed'),
+                  child: Center(child: Text('Network/Api Failed')),
                 );
               }
               return Center(child: CircularProgressIndicator(color: Colors.white,));
@@ -108,175 +114,11 @@ class Home extends StatelessWidget {
     ),
     );
   }
-  Widget custom_search(height,width,snapshot,value,context,appstate,fetchstate){
-    return TextField(
-      onSubmitted: (val){
-        appstate.gettext(val);
-      },
-      decoration: InputDecoration(
-      
-        hintText: 'Enter your location',
-        hintStyle: TextStyle(
-          color: Colors.white
-        ),
-        prefixIcon: IconButton(
-          icon: Icon(Icons.search,color: Colors.white),
-          onPressed: (){
-            print('search area');
-          },
-        ),
-        border: OutlineInputBorder(
-          borderSide: BorderSide(color: Colors.white,),
-          borderRadius: BorderRadius.circular(10)
-        )
-      ),
-    );
 
-  }
-  Widget custom_text(var height,snapshot,value){
-    return Container(
-      
-      child: Text('Next 7 Days',
-      style: TextStyle(
-        fontSize: height*0.03,
-        fontWeight: FontWeight.bold,
-        color: Colors.white,
-        wordSpacing: 3.0
-      ),
-      ),
-    );
-  }
+  
 
-  Widget custom_appbar(var height,var width,snapshot,value,context,appstate){
-    return Container(
-      height: height*1,
-      width: width/1,
-      color: Color.fromARGB(255, 25, 2, 65),
-      padding: EdgeInsets.all(20),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              IconButton(
-              icon: Icon(Icons.menu,color: Colors.white),
-              onPressed: (){
-                 Scaffold.of(context).openDrawer();
-              },
-                  ),
-                  SizedBox(width: width/7),
-                  Text('Weather Forcast',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: height*0.025
-                  ),
-                  ),
+  
+  
 
-            ],
-          )
-        ],
-      ),
-    );
-  }
 
-  Widget custom_container(var height,var width,snapshot,value){
-    return Container(
-          padding: EdgeInsets.all(15),
-          height: height*0.2,
-          width: width*0.80,
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                
-                Text('Today',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: height*0.02,
-                  fontWeight: FontWeight.bold
-                ),
-                ),
-                Text('Sat,19 Mar',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: height*0.02,
-                  fontWeight: FontWeight.bold
-                ),
-                )
-                ],),
-                SizedBox(height: height*0.03),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(snapshot.data.city.name,
-                    style: TextStyle(
-                      fontSize: height*0.06,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white
-                    ),
-                    ),Text('oC',
-                    style: TextStyle(
-                      fontSize: height*0.03,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.yellow
-                    ),
-                    )
-                  ],
-                ),
-                SizedBox(height: height*0.02),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: Icon(Icons.location_on_outlined),
-                      color: Colors.yellow,
-                      onPressed: ()=>print('location change'),
-                    ),
-                    Text('',
-                    style: TextStyle(
-                      fontSize: height*0.02,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.white
-                    ),
-                    )
-                  ],
-                )
-            ],
-          ),
-          decoration: BoxDecoration(
-          color: Color.fromARGB(15, 59, 58, 58).withOpacity(0.2),
-          borderRadius: BorderRadius.circular(20)
-          
-          ),
-        );
-  }
-
-  Widget custome_horizontal_7days(var height,var width,var context,snapshot,value){
-    return Container(
-      width: width*1,
-      height: height*0.6,
-      color: Colors.transparent,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: 7,
-        itemBuilder: (context,index){
-          return Row(
-            children: 
-              [
-                SizedBox(width: 10,),
-                Container(
-                height: height*0.35,
-                width: width*0.65,
-                decoration: BoxDecoration(
-                color: Color.fromARGB(15, 59, 58, 58).withOpacity(0.2),
-                borderRadius: BorderRadius.circular(25)
-                ),
-              ),
-              SizedBox(width: width*0.02,),
-            ],
-          );
-        }
-      ),
-    );
-  }
 }
